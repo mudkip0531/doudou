@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阿豆的奇幻漂流
+    </title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .dog {
+            position: absolute;
+            width: 100px;
+            animation: bounce 1s infinite alternate;
+            z-index: 10;
+        }
+
+        #dog1 {
+            top: 10%;
+            left: 10%;
+            animation: spin 2s infinite linear;
+        }
+
+        #dog2 {
+            top: 30%;
+            left: 50%;
+            animation: shake 0.5s infinite;
+        }
+
+        #dog3 {
+            bottom: 20%;
+            right: 10%;
+            animation: jump 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes jump {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-50px) rotate(20deg);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* 彩虹背景 */
+        .rainbow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, purple);
+            animation: rainbow-anim 2s infinite;
+            opacity: 0.6;
+            z-index: 5;
+        }
+
+        @keyframes rainbow-anim {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            animation: explode 1s forwards;
+            z-index: 15;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="rainbow"></div>
+    <img src="dog1.png" class="dog" id="dog1">
+    <img src="dog2.png" class="dog" id="dog2">
+    <img src="dog3.png" class="dog" id="dog3">
+
+    <script>
+        const images = ['dog1.png', 'dog2.png', 'dog3.png']; // 你的狗狗圖片陣列
+
+        // 初始狗狗隨機移動
+        const dogs = document.querySelectorAll('.dog');
+        setInterval(() => {
+            dogs.forEach(dog => {
+                const x = Math.random() * (window.innerWidth - 100);
+                const y = Math.random() * (window.innerHeight - 100);
+                dog.style.left = `${x}px`;
+                dog.style.top = `${y}px`;
+            });
+        }, 2000);
+
+        // 5秒後開始瘋狂增加狗狗
+        setTimeout(() => {
+            document.body.style.animation = 'shake 0.1s infinite'; // 畫面抖動
+
+            // 每0.2秒新增一隻狗狗，共持續5秒
+            let spawnInterval = setInterval(() => {
+                const newDog = document.createElement('img');
+                newDog.src = images[Math.floor(Math.random() * images.length)]; // 隨機選一張圖
+                newDog.className = 'dog';
+                newDog.style.left = `${Math.random() * (window.innerWidth - 100)}px`;
+                newDog.style.top = `${Math.random() * (window.innerHeight - 100)}px`;
+                newDog.style.animation = `${['spin', 'shake', 'jump'][Math.floor(Math.random() * 3)]} ${Math.random() * 2 + 0.5}s infinite`;
+                document.body.appendChild(newDog);
+
+                // 粒子效果
+                for (let i = 0; i < 5; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = newDog.style.left;
+                    particle.style.top = newDog.style.top;
+                    particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 1000);
+                }
+            }, 200);
+
+            // 5秒後停止新增並恢復正常
+            setTimeout(() => {
+                clearInterval(spawnInterval);
+                document.body.style.animation = 'none';
+                alert('媽媽我要吃雞腿肉!');
+            }, 5000);
+        }, 5000);
+
+        // 點擊狗狗觸發額外效果
+        document.addEventListener('click', (e) => {
+            if (e.target.className === 'dog') {
+                e.target.style.transform = 'scale(2)';
+                setTimeout(() => {
+                    e.target.style.transform = 'scale(1)';
+                }, 500);
+                document.body.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+
+                // 點擊時也新增一隻狗狗
+                const newDog = document.createElement('img');
+                newDog.src = images[Math.floor(Math.random() * images.length)];
+                newDog.className = 'dog';
+                newDog.style.left = `${e.pageX - 50}px`;
+                newDog.style.top = `${e.pageY - 50}px`;
+                newDog.style.animation = 'jump 1s infinite';
+                document.body.appendChild(newDog);
+            }
+        });
+    </script>
+</body>
+
+</html>
